@@ -1,0 +1,71 @@
+#importando bibliotecas
+import openai
+import tkinter as tk
+from tkinter import PhotoImage
+import pandas as pd
+from time import sleep
+
+#criando def
+def chat_gpt():
+    def destruir_rep():
+        sleep(5)
+        label_mostrar.destroy()
+        bt_dnv.destroy()
+    reclame_aqui = entry_otimo.get()
+    entry_otimo.delete(0, 'end')
+    print(reclame_aqui)
+
+    #Avaliando a reclamação
+    openai.api_key = "#insira sua chave openai"
+ prompt = f"chat, preciso que voce pegue uma essa reclamação do cidadão e classifique-a em pessima,ruim,media,boa ou otima e adicione uma nota nela de 0 a 10 baseada na sua classificação, reclamacao = {reclame_aqui}"
+    response = openai.Completion.create(
+        engine="text-davinci-003",  # Escolha o motor GPT-3.5 desejado
+        prompt=prompt,
+        max_tokens=50  # Defina o número máximo de tokens na resposta
+    )
+    
+    resposta = response.choices[0].text.strip()  # Remove espaços em branco no início e no final
+    resposta = resposta.replace('\n', ' ')  # Remove quebras de linha e substitui por espaços
+
+ resposta = response.choices[0].text.strip()  # Remove espaços em branco no início e no final
+    resposta = resposta.replace('\n', ' ')  # Remove quebras de linha e substitui por espaços
+
+
+    print(response.choices[0].text)
+    fonte2 = 10
+    label_mostrar = tk.Label(janela, text =resposta, fg="green", bg = "black" , font = fonte2 )
+    label_mostrar.place(x = 1000 , y = 397)
+
+    bt_dnv = tk.Button(janela, text = 'Opinar dnv', bg = 'green', command = destruir_rep)
+    bt_dnv.place(x =1010, y =430)
+
+#guardar no excel Pandas
+    resposta = response.choices[0].text.strip()
+    resposta = resposta.replace('\n', ' ')
+    dados = {'Reclamacao': [reclame_aqui], 'Classificacao': [resposta]}
+    df = pd.DataFrame(dados)
+
+
+#front-end
+
+#Criação da janela
+janela = tk.Tk()
+janela.title('Opinando Unidos')
+janela.geometry("1920x1080")
+
+
+# Adicionar imagem na janela
+img_fundo = PhotoImage(file=r'D:\opnu\PESSIMO.png')  # Carregar a imagem como um objeto PhotoImage
+label_de_fundo = tk.Label(janela, image=img_fundo)
+label_de_fundo.place(x=0, y=0, relwidth=1, relheight=1)
+
+#criando entry
+fonte = 50
+
+entry_otimo = tk.Entry(janela, width=30, font = fonte )  # Defina a largura desejada aqui
+entry_otimo.place(x=1000, y=370)
+
+bt_enviar = tk.Button(janela, text = 'ENVIAR', bg = 'green', command = chat_gpt)
+bt_enviar.place(x =1010, y =397)
+
+janela.mainloop()
